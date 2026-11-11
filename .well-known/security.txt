@@ -1,0 +1,5 @@
+Contact: mailto:kafka@metamorphs.dev
+Encryption: https://metamorphs.dev/pgp.asc
+Expires: 2027-11-11T00:00:00.000Z
+Preferred-Languages: en
+Canonical: https://metamorphs.dev/.well-known/security.txt

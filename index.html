@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>kafka</title>
+    <meta name="description" content="kafka — Cyber Security student building security tools in Python.">
+    <link rel="canonical" href="https://metamorphs.dev/">
+    <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+    <link rel="icon" href="assets/favicon-32.png" sizes="32x32" type="image/png">
+    <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+    <meta name="theme-color" content="#000000">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://metamorphs.dev/">
+    <meta property="og:title" content="kafka · Cyber Security student">
+    <meta property="og:description" content="Python security tools, CTFs and write-ups by a UK Cyber Security student.">
+    <meta property="og:image" content="https://metamorphs.dev/assets/og.png">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:image" content="https://metamorphs.dev/assets/og.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- ───────── Nav ───────── -->
+    <header class="nav">
+        <div class="nav__inner">
+            <a href="#home" class="logo">kafka<span class="logo__cursor">_</span></a>
+            <button class="nav__toggle" aria-label="Toggle menu" aria-expanded="false">
+                <span></span><span></span><span></span>
+            </button>
+            <nav class="nav__links">
+                <a href="#home">Home</a>
+                <a href="#about">About</a>
+                <a href="#projects">Projects</a>
+                <a href="#writeups">Writeups</a>
+                <a href="#education">Education</a>
+                <a href="#contact">Contact</a>
+                <a href="https://github.com/kafkaesqueismn" class="nav__gh" target="_blank" rel="noopener" aria-label="GitHub profile">
+                    <svg viewBox="0 0 16 16" width="16" height="16" aria-hidden="true"><path fill="currentColor" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+                    <span>GitHub</span>
+                </a>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+
+        <!-- ───────── Hero (site mark lives here) ───────── -->
+        <section id="home" class="hero">
+            <div class="container hero__inner">
+                <div class="hero__text reveal">
+                    <p class="eyebrow"><span class="prompt">~ $</span> whoami</p>
+                    <h1>kafka<span class="accent">.</span></h1>
+                    <p class="hero__sub">Cyber Security student at a UK university. I build security tools in Python and spend my spare time on CTFs and Linux wargames.</p>
+                    <div class="hero__cta">
+                        <a href="#projects" class="btn btn--solid">View my work</a>
+                        <a href="https://github.com/kafkaesqueismn" class="btn btn--ghost" target="_blank" rel="noopener">GitHub ↗</a>
+                    </div>
+                </div>
+                <figure class="mark reveal">
+                    <img src="assets/sitemark.jpg" alt="Dithered illustration of a hand holding a glowing orb">
+                </figure>
+            </div>
+        </section>
+
+        <!-- ───────── About ───────── -->
+        <section id="about" class="section">
+            <div class="container about">
+                <div class="about__text reveal">
+                    <h2>About Me</h2>
+                    <p>I'm a first-year BSc (Hons) Cyber Security student at a UK university. I've done well so far in my Computer Mathematics, Programming and Systems assessments.</p>
+                    <p>Outside of lectures I write small security tools in Python: packet analysers, file inspectors, cipher breakers. I run Arch Linux day to day and like knowing how a system works under the hood.</p>
+                    <p>I'm good at explaining technical topics clearly to people of any background, from choosing a laptop to locking down a home network.</p>
+                    <h3 class="about__sub">Currently into</h3>
+                    <ul class="interests">
+                        <li>Capture-the-flag challenges &amp; Linux wargames</li>
+                        <li>Reverse engineering &amp; malware analysis</li>
+                        <li>Building security tools in Python</li>
+                        <li>Customising Linux &amp; building PCs</li>
+                    </ul>
+                </div>
+                <div class="about__art reveal" aria-hidden="true">
+                    <svg class="bat bat--1" viewBox="0 0 21 10" shape-rendering="crispEdges"></svg>
+                    <svg class="bat bat--2" viewBox="0 0 21 10" shape-rendering="crispEdges"></svg>
+                    <svg class="bat bat--3" viewBox="0 0 21 10" shape-rendering="crispEdges"></svg>
+                    <span class="spark spark--1">✦</span>
+                    <span class="spark spark--2">✕</span>
+                    <span class="spark spark--3">✚</span>
+                    <span class="ring ring--1"></span>
+                    <span class="ring ring--2"></span>
+                    <span class="dot dot--1"></span>
+                    <span class="dot dot--2"></span>
+                </div>
+            </div>
+        </section>
+
+        <!-- ───────── Skills ───────── -->
+        <section id="skills" class="section">
+            <div class="container">
+                <h2 class="reveal">Skills &amp; Technologies</h2>
+                <div class="grid grid--3">
+                    <article class="card reveal">
+                        <h3>Security</h3>
+                        <ul class="tags">
+                            <li>Packet analysis</li><li>Static analysis</li><li>Log analysis</li><li>OpenPGP</li><li>Cryptography</li><li>CTFs</li>
+                        </ul>
+                    </article>
+                    <article class="card reveal">
+                        <h3>Programming</h3>
+                        <ul class="tags">
+                            <li>Python</li><li>Scapy</li><li>PySide6</li><li>pytest</li><li>Git &amp; GitHub</li><li>Jupyter</li>
+                        </ul>
+                    </article>
+                    <article class="card reveal">
+                        <h3>Systems</h3>
+                        <ul class="tags">
+                            <li>Linux (Arch)</li><li>Networking</li><li>PC hardware</li><li>Troubleshooting</li>
+                        </ul>
+                    </article>
+                </div>
+            </div>
+        </section>
+
+        <!-- ───────── Projects ───────── -->
+        <section id="projects" class="section">
+            <div class="container">
+                <h2 class="reveal">Projects</h2>
+                <div class="grid grid--2">
+                    <article class="card project project--featured reveal">
+                        <div class="project__thumb project__shot"><img src="assets/pgp-messenger.webp" alt="PGP Messenger encrypt tab: a message to Alice encrypted and signed, showing the ASCII-armored PGP output" width="1014" height="640" loading="lazy"></div>
+                        <div class="project__body">
+                            <p class="project__label">Featured</p>
+                            <h3>PGP Messenger</h3>
+                            <p>A desktop app for encrypting, decrypting, signing and verifying messages and files with OpenPGP. It generates RSA keypairs, keeps a local keyring of contacts, and works alongside GnuPG, Thunderbird and ProtonMail. Built on PGPy with no hand-rolled crypto, and tested on Linux and Windows in CI.</p>
+                            <ul class="tags"><li>Python</li><li>OpenPGP</li><li>PySide6</li><li>GitHub Actions</li></ul>
+                            <div class="project__links"><a href="https://github.com/kafkaesqueismn/pgp-messenger" target="_blank" rel="noopener">View code ↗</a></div>
+                        </div>
+                    </article>
+                    <article class="card project reveal">
+                        <div class="project__thumb term"><div class="term__bar"><i></i><i></i><i></i><span>pcap-analyser</span></div><pre><span class="t-prompt">$</span> python -m pcap_analyser samples/sample.pcap
+<span class="t-head">PCAP ANALYSIS REPORT</span>
+Packets:  2188
+Hosts:    50
+<span class="t-head">Findings at a glance</span>
+<span class="t-warn">  [!!] Port scans: 2</span>
+<span class="t-warn">  [!!] Suspicious DNS names: 42</span>
+<span class="t-warn">  [!!] Possible DNS tunnels / DGA domains: 1</span>
+<span class="t-warn">  [!!] Cleartext credentials: 4</span>
+<span class="t-warn">  [!!] Unusual / suspicious ports: 2</span></pre></div>
+                        <h3>PCAP Analyser</h3>
+                        <p>A command-line tool that analyses packet captures for port scans, DNS tunnelling, cleartext credentials and traffic on unusual ports.</p>
+                        <ul class="tags"><li>Python</li><li>Scapy</li><li>Networking</li></ul>
+                        <div class="project__links"><a href="https://github.com/kafkaesqueismn/pcap-analyser" target="_blank" rel="noopener">View code ↗</a></div>
+                    </article>
+                    <article class="card project reveal">
+                        <div class="project__thumb term"><div class="term__bar"><i></i><i></i><i></i><span>static-analyser</span></div><pre><span class="t-prompt">$</span> python -m static_analyser samples/tiny_pe.exe
+<span class="t-head"> STATIC ANALYSIS REPORT   (the file was read, never executed)</span>
+Type      : PE executable (Windows .exe/.dll/.sys)
+SHA256 : f351c8a965b27335e90844a8574675ccf61ad4ba79b19447884ad0cb8a6dcafb
+<span class="t-head">--- Key observations ---------------------------------------------------------</span>
+<span class="t-warn">[!] Section &#x27;.packed&#x27; has high entropy (7.95) - possibly packed or encrypted</span>
+<span class="t-warn">[!] Section &#x27;.packed&#x27; is both writable and executable (W+X). Normal compilers</span>
+<span class="t-warn">[!] Section name &#x27;.packed&#x27; is associated with a known packer.</span>
+<span class="t-warn">[!] Only 10 imported functions, including LoadLibrary/GetProcAddress - a small</span></pre></div>
+                        <h3>Static File Analyser</h3>
+                        <p>Inspects files without running them: hashes, true file type, PE and ELF headers, entropy, extracted strings and suspicious indicators. No dependencies.</p>
+                        <ul class="tags"><li>Python</li><li>Malware analysis</li><li>PE / ELF</li></ul>
+                        <div class="project__links"><a href="https://github.com/kafkaesqueismn/static-analyser" target="_blank" rel="noopener">View code ↗</a></div>
+                    </article>
+                    <article class="card project reveal">
+                        <div class="project__thumb term"><div class="term__bar"><i></i><i></i><i></i><span>log-analyser</span></div><pre><span class="t-prompt">$</span> python -m log_analyser auth.log
+<span class="t-head">SSH AUTH LOG ANALYSIS REPORT</span>
+  Failed attempts:    285
+  Successful logins:  9
+  Top failing IPs:    203.0.113.45 (150), 198.51.100.200 (40), 203.0.113.99 (40), 10.0.0.34 (5), 192.0.2.29 (2)
+<span class="t-warn">[!] Logins after repeated failures</span>
+<span class="t-head">  SEV   TIME                 IP            USER    METHOD    FAILS  USERS TRIED</span>
+<span class="t-warn">  HIGH  2026-11-10 18:04:12  203.0.113.99  deploy  password  40     deploy</span>
+<span class="t-head">Brute-force attempts</span>
+  203.0.113.45  2026-11-10 02:52:50  2026-11-10 03:06:02  13m12s    150       jenkins, steam, administrator, oracle (+19 more)</pre></div>
+                        <h3>Log Analyser</h3>
+                        <p>Parses Linux SSH auth logs to detect brute-force attempts and suspicious logins, with a generator for realistic sample logs.</p>
+                        <ul class="tags"><li>Python</li><li>Linux</li><li>Detection</li></ul>
+                        <div class="project__links"><a href="https://github.com/kafkaesqueismn/log-analyser" target="_blank" rel="noopener">View code ↗</a></div>
+                    </article>
+                    <article class="card project reveal">
+                        <div class="project__thumb term"><div class="term__bar"><i></i><i></i><i></i><span>password-checker</span></div><pre><span class="t-prompt">$</span> python password_checker.py --offline
+Password to check: 
+
+<span class="t-ok">Score: 75/100 (Strong)</span>
+  - Decent length, but 12+ characters is much stronger.
+
+Breach check skipped (--offline).</pre></div>
+                        <h3>Password Checker</h3>
+                        <p>Scores password strength and checks for breaches against Have I Been Pwned using k-anonymity, so the password itself never leaves your machine.</p>
+                        <ul class="tags"><li>Python</li><li>HIBP API</li><li>k-anonymity</li></ul>
+                        <div class="project__links"><a href="https://github.com/kafkaesqueismn/password-checker" target="_blank" rel="noopener">View code ↗</a></div>
+                    </article>
+                    <article class="card project reveal">
+                        <div class="project__thumb term"><div class="term__bar"><i></i><i></i><i></i><span>cipher-toolkit</span></div><pre><span class="t-prompt">$</span> python -m cipher_toolkit caesar crack &quot;Wkh vhfuhw phhwlqj lv dw gdzq&quot;
+<span class="t-ok">shift= 3  score=    10.52  The secret meeting is at dawn</span>
+shift=18  score=    86.08  Esp dpncpe xppetyr td le olhy
+shift=15  score=    90.23  Hvs gsqfsh asshwbu wg oh rokb
+shift=14  score=   138.83  Iwt htrgti bttixcv xh pi splc
+shift= 9  score=   140.15  Nby mywlyn gyyncha cm un xuqh</pre></div>
+                        <h3>Cipher Toolkit</h3>
+                        <p>Implements classical ciphers (Caesar, Vigenère and XOR) alongside the attacks that break them.</p>
+                        <ul class="tags"><li>Python</li><li>Cryptanalysis</li></ul>
+                        <div class="project__links"><a href="https://github.com/kafkaesqueismn/cipher-toolkit" target="_blank" rel="noopener">View code ↗</a></div>
+                    </article>
+                    <article class="card project reveal">
+                        <div class="project__thumb term"><div class="term__bar"><i></i><i></i><i></i><span>Network_Scan_Detector.ipynb</span></div><pre><span class="t-kw">from</span> sklearn.tree <span class="t-kw">import</span> DecisionTreeClassifier, plot_tree
+
+model = DecisionTreeClassifier(max_depth=4, min_samples_leaf=10, random_state=42)
+model.fit(X_train, y_train)
+
+<span class="t-kw">print</span>(&quot;Model trained ✅&quot;)</pre></div>
+                        <h3>Network Scan Detector</h3>
+                        <p>An intro to machine learning in security: a notebook that trains a decision tree to detect synthetic port scans.</p>
+                        <ul class="tags"><li>Python</li><li>Machine learning</li><li>Jupyter</li></ul>
+                        <div class="project__links"><a href="https://github.com/kafkaesqueismn/network-scan-detector" target="_blank" rel="noopener">View code ↗</a></div>
+                    </article>
+                </div>
+            </div>
+        </section>
+
+        <!-- ───────── Writeups ───────── -->
+        <section id="writeups" class="section">
+            <div class="container">
+                <h2 class="reveal">Writeups</h2>
+                <p class="section__intro reveal">Walkthroughs of CTF challenges, HackTheBox and TryHackMe rooms: how I approached each one, what worked, and what I learned.</p>
+                <div class="grid grid--2" id="writeupList">
+                    <!-- Add a card per writeup, newest first. Copy writeups/template.html to start a new one.
+                    <a class="card writeup reveal" href="writeups/box-name.html">
+                        <p class="writeup__meta">HackTheBox · Easy · Nov 2026</p>
+                        <h3>Box Name</h3>
+                        <p>One-line summary of the box and the key technique.</p>
+                        <ul class="tags"><li>Linux</li><li>PrivEsc</li></ul>
+                    </a>
+                    -->
+                    <div class="card writeup writeup--empty reveal">
+                        <p class="writeup__meta">Coming soon</p>
+                        <h3>First writeups on the way</h3>
+                        <p>Currently working through CTFs and HackTheBox / TryHackMe labs. Writeups for retired boxes and finished challenges will land here.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ───────── Education ───────── -->
+        <section id="education" class="section">
+            <div class="container">
+                <h2 class="reveal">Education</h2>
+                <ol class="timeline">
+                    <li class="timeline__item reveal">
+                        <span class="timeline__year">2026</span>
+                        <div class="card">
+                            <h3>BSc (Hons) Cyber Security</h3>
+                            <p class="timeline__org">UK university · 2026 – 2029 (expected)</p>
+                            <p>Modules include programming, computer mathematics and computer systems. Achieved highly in Computer Mathematics, Programming and Systems assessments.</p>
+                        </div>
+                    </li>
+                </ol>
+            </div>
+        </section>
+
+        <!-- ───────── Learning & goals ───────── -->
+        <section id="learning" class="section">
+            <div class="container">
+                <h2 class="reveal">Learning &amp; Goals</h2>
+                <div class="grid grid--2">
+                    <article class="card reveal">
+                        <h3>Currently learning</h3>
+                        <ul class="interests">
+                            <li>Linux internals &amp; privilege escalation</li>
+                            <li>Networking fundamentals &amp; Active Directory attacks</li>
+                            <li>x86/x64 assembly for reverse engineering</li>
+                            <li>Python for security tooling</li>
+                            <li>CTFs and HackTheBox / TryHackMe labs</li>
+                        </ul>
+                    </article>
+                    <article class="card reveal">
+                        <h3>Goals</h3>
+                        <ul class="goals">
+                            <li>OSCP</li>
+                            <li>Land a security / research internship</li>
+                            <li>Publish a write-up or small piece of research</li>
+                            <li>PhD in security / AI security</li>
+                        </ul>
+                    </article>
+                </div>
+            </div>
+        </section>
+
+        <!-- ───────── Contact ───────── -->
+        <section id="contact" class="section">
+            <div class="container contact reveal">
+                <h2>Get in touch</h2>
+                <p>Open to placements, internships and security-related opportunities, or just a chat about CTFs.</p>
+                <div class="hero__cta contact__cta">
+                    <a href="mailto:kafka@metamorphs.dev" class="btn btn--solid">kafka@metamorphs.dev</a>
+                    <a href="https://github.com/kafkaesqueismn" class="btn btn--ghost" target="_blank" rel="noopener">GitHub ↗</a>
+                </div>
+                <div class="pgp">
+                    <a href="pgp.asc" class="pgp__link" download>
+                        <svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path fill="currentColor" d="M4 7V5a4 4 0 1 1 8 0v2h.5A1.5 1.5 0 0 1 14 8.5v6a1.5 1.5 0 0 1-1.5 1.5h-9A1.5 1.5 0 0 1 2 14.5v-6A1.5 1.5 0 0 1 3.5 7H4Zm2 0h4V5a2 2 0 1 0-4 0v2Z"/></svg>
+                        PGP public key
+                    </a>
+                    <code class="pgp__fp" title="Key fingerprint">06DB 9540 4603 3752 CB8E  97EC 498A C134 CFD1 DEBF</code>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="footer">
+        <div class="container footer__inner">
+            <span class="logo logo--small">kafka</span>
+            <span>© <span id="year"></span> kafka</span>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
