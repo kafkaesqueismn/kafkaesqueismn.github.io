@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="generator" content="metamorphs-build">
+    <title>Entropy alone flags a quarter of popular domains · kafka</title>
+    <meta name="description" content="I tested my PCAP analyser&#x27;s &quot;random-looking domain&quot; check against 33,000 real domains and a few kinds of generated ones. Entropy alone is bad at this, and some malware domains get past the improved check too.">
+    <link rel="canonical" href="https://metamorphs.dev/blog/dns-entropy-isnt-enough/">
+    <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+    <link rel="icon" href="/assets/favicon-32.png" sizes="32x32" type="image/png">
+    <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+    <link rel="alternate" type="application/rss+xml" title="kafka" href="/feed.xml">
+    <meta name="theme-color" content="#000000">
+    <meta property="og:type" content="article">
+    <meta property="og:url" content="https://metamorphs.dev/blog/dns-entropy-isnt-enough/">
+    <meta property="og:title" content="Entropy alone flags a quarter of popular domains · kafka">
+    <meta property="og:description" content="I tested my PCAP analyser&#x27;s &quot;random-looking domain&quot; check against 33,000 real domains and a few kinds of generated ones. Entropy alone is bad at this, and some malware domains get past the improved check too.">
+    <meta property="og:image" content="https://metamorphs.dev/assets/og.png">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:image" content="https://metamorphs.dev/assets/og.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+    <header class="nav scrolled">
+        <div class="nav__inner">
+            <a href="/" class="logo">kafka<span class="logo__cursor">_</span></a>
+            <nav class="nav__links nav__links--static">
+                <a href="/blog/">Blog</a>
+                <a href="/#writeups">Writeups</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="article">
+        <a class="article__back" href="/blog/">cd ../blog</a>
+        <h1>Entropy alone flags a quarter of popular domains</h1>
+        <p class="writeup__meta">12 Nov 2026 · 4 min read</p>
+        <ul class="tags"><li>dns</li><li>detection</li><li>blue-team</li><li>python</li></ul>
+        <div class="article__body">
+<p>My <a href="https://github.com/kafkaesqueismn/pcap-analyser" target="_blank" rel="noopener">PCAP analyser</a> flags DNS lookups that look machine-generated, because that&#x27;s what malware using a DGA (domain generation algorithm) looks like on the wire. It&#x27;s also a sign of DNS tunnelling, where data is hidden in subdomains.</p>
+<p>The usual approach is Shannon entropy: random strings have high entropy, real words don&#x27;t. While building it I noticed that <code>stackoverflow</code> scores <strong>3.55 bits per character</strong>, which is above the 3.3 threshold I was using. So I made the check require <strong>two</strong> of these four signals:</p>
+<ul><li>entropy ≥ 3.3</li><li>vowels make up under 20% of the characters</li><li>letters mixed with at least 2 digits</li><li>a run of 5 or more consonants</li></ul>
+<p>Only labels of 10+ characters are checked, because short strings can&#x27;t reach high entropy even when they&#x27;re random.</p>
+<p>I&#x27;d tested that on a few examples. This time I wanted proper numbers.</p>
+<h2 id="real-domains">Real domains</h2>
+<p>I took the top 100,000 sites from the <a href="https://tranco-list.eu/" target="_blank" rel="noopener">Tranco list</a>, a research ranking of popular domains. For each one I used the main label (<code>google</code> from <code>google.com</code>) and kept the ones with 10+ characters. That left <strong>33,097</strong> labels.</p>
+<div class="table-wrap"><table><thead><tr><th>Check</th><th>Popular domains flagged</th></tr></thead><tbody><tr><td>Entropy ≥ 3.3 alone</td><td>7,624 (<strong>23.0%</strong>)</td></tr><tr><td>Two of four signals</td><td>1,609 (<strong>4.9%</strong>)</td></tr></tbody></table></div>
+<p>Entropy alone flags almost a quarter of popular domains. Some of what it caught:</p>
+<p><code>sharepoint.com</code>, <code>googlesyndication.com</code>, <code>microsoftonline.com</code>, <code>windowsupdate.com</code>, <code>google-analytics.com</code>, <code>creativecommons.org</code></p>
+<p>That would be useless on a real network. Your alerts would be full of Microsoft.</p>
+<p>The two-signal rule cuts that to 4.9%. What&#x27;s left are mostly names with digits or abbreviations: <code>appsflyersdk.com</code>, <code>crashlytics.com</code>, <code>spotifycdn.com</code>, <code>flightradar24.com</code>, <code>privacy-mgmt.com</code>. A few really are machine-generated, like <code>w2rt6byl5nf1opmc-a.com</code>, which is some kind of CDN or tracking domain. Still too noisy to alert on by itself, which is why the README says to keep an allow-list.</p>
+<h2 id="generated-domains">Generated domains</h2>
+<p>Then the other side: how much fake DGA-style stuff each check catches. I generated 5,000 labels of each kind:</p>
+<div class="table-wrap"><table><thead><tr><th>Kind of label</th><th>Entropy alone</th><th>Two signals</th></tr></thead><tbody><tr><td>random a–z, 10–16 chars</td><td>45.7%</td><td>66.3%</td></tr><tr><td>random a–z, exactly 10 chars</td><td>13.3%</td><td>45.2%</td></tr><tr><td>random a–z and 0–9, 10–16 chars</td><td>61.8%</td><td>87.7%</td></tr><tr><td>hex, 16 chars</td><td>37.8%</td><td>90.7%</td></tr><tr><td>base32, 16 chars (tunnel-style)</td><td>92.5%</td><td>95.4%</td></tr><tr><td>two dictionary words joined</td><td>25.8%</td><td>2.5%</td></tr></tbody></table></div>
+<p>I didn&#x27;t expect the two-signal rule to come out ahead on <strong>both</strong> sides. It flags fewer real domains <em>and</em> catches more random ones. Entropy on a 10–16 character string is just a noisy measurement. A random 10-letter string only goes over 3.3 about 13% of the time, because there aren&#x27;t enough characters for the distribution to spread out. The vowel and consonant checks don&#x27;t have that problem.</p>
+<p>Hex is the clearest example. Only 16 possible characters means entropy tops out at 4 bits, and short hex strings usually land under 3.3. But hex is almost always low on vowels and full of digits, so two of the other signals fire straight away.</p>
+<h2 id="the-one-that-gets-past">The one that gets past</h2>
+<p>The last row is the one that matters. Some real malware families build domains from <strong>dictionary words</strong> instead of random characters, like <code>bluebooksantiago</code> or <code>harshenlawmake</code>. These look like English to every character-level check, and the two-signal rule catches <strong>2.5%</strong> of them. That&#x27;s less often than it flags real popular domains.</p>
+<p>No per-name rule is going to catch those, because there&#x27;s nothing about one name on its own that gives it away.</p>
+<h2 id="what-does-work">What does work</h2>
+<p>Looking at behaviour across many lookups instead of one name at a time:</p>
+<ul><li><strong>Lots of NXDOMAIN.</strong> A DGA tries hundreds of domains and only a few are actually registered, so an infected host produces a burst of &quot;this domain doesn&#x27;t exist&quot; answers. Dictionary-word domains don&#x27;t help with that.</li><li><strong>Lots of unique subdomains under one domain.</strong> This is the strongest sign of tunnelling. Tools like iodine and dnscat2 put a new chunk of data in a new subdomain on every query. In my sample capture, one tunnel chunk happened to encode to <code>wubwauyxihozjpza</code>, which passed the per-name check, but the per-domain count caught it anyway.</li><li><strong>A spike in TXT queries</strong>, since TXT records carry the most data back.</li></ul>
+<p>So the per-name check is fine as one weak signal among several, but it isn&#x27;t a detector by itself. The <code>stackoverflow</code> thing was just the first sign of that.</p>
+        </div>
+        
+    </main>
+
+    <footer class="footer">
+        <div class="container footer__inner">
+            <a href="/" class="logo logo--small">kafka</a>
+            <span>© 2026 kafka · <a href="/feed.xml" class="accent">RSS</a></span>
+        </div>
+    </footer>
+</body>
+</html>

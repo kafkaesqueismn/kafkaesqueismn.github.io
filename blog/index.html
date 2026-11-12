@@ -39,15 +39,25 @@
         <a class="article__back" href="/">cd ~</a>
         <h1>Blog</h1>
         <p class="section__intro">Notes on security, Linux and the things I'm building and breaking.</p>
-        
+        <div class="filters" role="group" aria-label="Filter by tag"><button class="filter active" data-tag="">all</button><button class="filter" data-tag="blue-team">blue-team</button><button class="filter" data-tag="detection">detection</button><button class="filter" data-tag="dns">dns</button><button class="filter" data-tag="python">python</button></div>
         <div class="grid grid--2" id="postList">
-                    <div class="card writeup writeup--empty reveal">
-                        <p class="writeup__meta">Coming soon</p>
-                        <h3>First posts on the way</h3>
-                        <p>Notes on what I'm learning, building and breaking.</p>
-                    </div>
+                    <a class="card writeup reveal" href="/blog/dns-entropy-isnt-enough/" data-tags="dns|detection|blue-team|python">
+                        <p class="writeup__meta">12 Nov 2026 · 4 min read</p>
+                        <h3>Entropy alone flags a quarter of popular domains</h3>
+                        <p>I tested my PCAP analyser&#x27;s &quot;random-looking domain&quot; check against 33,000 real domains and a few kinds of generated ones. Entropy alone is bad at this, and some malware domains get past the improved check too.</p>
+                        <ul class="tags"><li>dns</li><li>detection</li><li>blue-team</li><li>python</li></ul>
+                    </a>
         </div>
     </main>
+    <script>
+    document.querySelectorAll(".filter").forEach(b => b.addEventListener("click", () => {
+        const tag = b.dataset.tag;
+        document.querySelectorAll(".filter").forEach(x => x.classList.toggle("active", x === b));
+        document.querySelectorAll("#postList .writeup").forEach(c => {
+            c.hidden = tag && !(c.dataset.tags || "").split("|").includes(tag);
+        });
+    }));
+    </script>
 
     <footer class="footer">
         <div class="container footer__inner">

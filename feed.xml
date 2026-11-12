@@ -4,6 +4,13 @@
     <title>kafka</title>
     <link>https://metamorphs.dev/</link>
     <description>Blog posts and writeups from metamorphs.dev</description>
-
+    <item>
+      <title>Entropy alone flags a quarter of popular domains</title>
+      <link>https://metamorphs.dev/blog/dns-entropy-isnt-enough/</link>
+      <guid>https://metamorphs.dev/blog/dns-entropy-isnt-enough/</guid>
+      <pubDate>Thu, 12 Nov 2026 00:00:00 +0000</pubDate>
+      <category>Blog</category>
+      <description>I tested my PCAP analyser&#x27;s &quot;random-looking domain&quot; check against 33,000 real domains and a few kinds of generated ones. Entropy alone is bad at this, and some malware domains get past the improved check too.</description>
+    </item>
   </channel>
 </rss>

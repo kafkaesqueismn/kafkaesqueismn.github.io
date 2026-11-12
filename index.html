@@ -238,11 +238,12 @@ model.fit(X_train, y_train)
                 <p class="section__intro reveal">Notes on security, Linux and the things I'm building and breaking.</p>
                 <div class="grid grid--2" id="blogList">
                     <!-- build:blog -->
-                    <div class="card writeup writeup--empty reveal">
-                        <p class="writeup__meta">Coming soon</p>
-                        <h3>First posts on the way</h3>
-                        <p>Notes on what I'm learning, building and breaking will land here.</p>
-                    </div>
+                    <a class="card writeup reveal" href="/blog/dns-entropy-isnt-enough/" data-tags="dns|detection|blue-team|python">
+                        <p class="writeup__meta">12 Nov 2026 · 4 min read</p>
+                        <h3>Entropy alone flags a quarter of popular domains</h3>
+                        <p>I tested my PCAP analyser&#x27;s &quot;random-looking domain&quot; check against 33,000 real domains and a few kinds of generated ones. Entropy alone is bad at this, and some malware domains get past the improved check too.</p>
+                        <ul class="tags"><li>dns</li><li>detection</li><li>blue-team</li><li>python</li></ul>
+                    </a>
                     <!-- /build:blog -->
                 </div>
                 <p class="section__more reveal"><a href="blog/">All posts →</a> <a href="feed.xml">RSS</a></p>

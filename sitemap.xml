@@ -2,4 +2,5 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url><loc>https://metamorphs.dev/</loc></url>
   <url><loc>https://metamorphs.dev/blog/</loc></url>
+  <url><loc>https://metamorphs.dev/blog/dns-entropy-isnt-enough/</loc></url>
 </urlset>
