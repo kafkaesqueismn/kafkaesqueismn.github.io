@@ -5,6 +5,14 @@
     <link>https://metamorphs.dev/</link>
     <description>Blog posts and writeups from metamorphs.dev</description>
     <item>
+      <title>Running a privilege escalation check on my own laptop</title>
+      <link>https://metamorphs.dev/blog/privesc-check-on-my-own-laptop/</link>
+      <guid>https://metamorphs.dev/blog/privesc-check-on-my-own-laptop/</guid>
+      <pubDate>Sun, 15 Nov 2026 00:00:00 +0000</pubDate>
+      <category>Blog</category>
+      <description>The first thing you check after getting a shell on a Linux comp is SUID binaries, capabilities and group membership. I ran the same checks on my own machine. The SUID list was fine. My groups weren&#x27;t.</description>
+    </item>
+    <item>
       <title>Entropy alone flags a quarter of popular domains</title>
       <link>https://metamorphs.dev/blog/dns-entropy-isnt-enough/</link>
       <guid>https://metamorphs.dev/blog/dns-entropy-isnt-enough/</guid>

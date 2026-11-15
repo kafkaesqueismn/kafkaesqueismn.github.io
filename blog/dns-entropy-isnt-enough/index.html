@@ -66,7 +66,7 @@
 <ul><li><strong>Lots of NXDOMAIN.</strong> A DGA tries hundreds of domains and only a few are actually registered, so an infected host produces a burst of &quot;this domain doesn&#x27;t exist&quot; answers. Dictionary-word domains don&#x27;t help with that.</li><li><strong>Lots of unique subdomains under one domain.</strong> This is the strongest sign of tunnelling. Tools like iodine and dnscat2 put a new chunk of data in a new subdomain on every query. In my sample capture, one tunnel chunk happened to encode to <code>wubwauyxihozjpza</code>, which passed the per-name check, but the per-domain count caught it anyway.</li><li><strong>A spike in TXT queries</strong>, since TXT records carry the most data back.</li></ul>
 <p>So the per-name check is fine as one weak signal among several, but it isn&#x27;t a detector by itself. The <code>stackoverflow</code> thing was just the first sign of that.</p>
         </div>
-        
+        <nav class="pager"><a class="pager__prev" href="/blog/privesc-check-on-my-own-laptop/"><small>← Newer</small>Running a privilege escalation check on my own laptop</a><span></span></nav>
     </main>
 
     <footer class="footer">

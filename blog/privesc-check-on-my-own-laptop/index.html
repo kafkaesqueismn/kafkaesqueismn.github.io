@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="generator" content="metamorphs-build">
+    <title>Running a privilege escalation check on my own laptop · kafka</title>
+    <meta name="description" content="The first thing you check after getting a shell on a Linux comp is SUID binaries, capabilities and group membership. I ran the same checks on my own machine. The SUID list was fine. My groups weren&#x27;t.">
+    <link rel="canonical" href="https://metamorphs.dev/blog/privesc-check-on-my-own-laptop/">
+    <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+    <link rel="icon" href="/assets/favicon-32.png" sizes="32x32" type="image/png">
+    <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+    <link rel="alternate" type="application/rss+xml" title="kafka" href="/feed.xml">
+    <meta name="theme-color" content="#000000">
+    <meta property="og:type" content="article">
+    <meta property="og:url" content="https://metamorphs.dev/blog/privesc-check-on-my-own-laptop/">
+    <meta property="og:title" content="Running a privilege escalation check on my own laptop · kafka">
+    <meta property="og:description" content="The first thing you check after getting a shell on a Linux comp is SUID binaries, capabilities and group membership. I ran the same checks on my own machine. The SUID list was fine. My groups weren&#x27;t.">
+    <meta property="og:image" content="https://metamorphs.dev/assets/og.png">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:image" content="https://metamorphs.dev/assets/og.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+    <header class="nav scrolled">
+        <div class="nav__inner">
+            <a href="/" class="logo">kafka<span class="logo__cursor">_</span></a>
+            <nav class="nav__links nav__links--static">
+                <a href="/blog/">Blog</a>
+                <a href="/#writeups">Writeups</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="article">
+        <a class="article__back" href="/blog/">cd ../blog</a>
+        <h1>Running a privilege escalation check on my own laptop</h1>
+        <p class="writeup__meta">15 Nov 2026 · 4 min read</p>
+        <ul class="tags"><li>linux</li><li>privilege-escalation</li><li>opsec</li><li>blue-team</li></ul>
+        <div class="article__body">
+<p>Every privilege escalation guide for Linux starts with the same few commands. Find the SUID binaries, find files with capabilities, check what groups you&#x27;re in, check <code>sudo -l</code>. I&#x27;ve run them on enough lab comps that I thought I should run them on the machine I actually use every day. Obviously.</p>
+<h2 id="suid-binaries">SUID binaries</h2>
+<pre><code class="language-bash">find / -xdev -perm -4000 -type f 2&gt;/dev/null</code></pre>
+<p>A SUID binary runs as its owner, which is usually root, no matter who starts it. I got <strong>23</strong>. Most are what you&#x27;d expect on any Linux install:</p>
+<ul><li>account tools: <code>passwd</code>, <code>chsh</code>, <code>chfn</code>, <code>chage</code>, <code>gpasswd</code>, <code>newgrp</code></li><li>switching user: <code>su</code>, <code>sudo</code>, <code>pkexec</code>, <code>ksu</code></li><li>mounting: <code>mount</code>, <code>umount</code>, <code>fusermount3</code>, <code>mount.cifs</code></li><li>helpers: <code>unix_chkpwd</code>, <code>ssh-keysign</code>, <code>dbus-daemon-launch-helper</code></li></ul>
+<p>The rest came from apps I&#x27;ve installed, like the Chromium sandbox helper that Electron apps ship and QEMU&#x27;s network bridge helper.</p>
+<p>None of these hand you a root shell just because they&#x27;re SUID. <a href="https://gtfobins.github.io/" target="_blank" rel="noopener">GTFOBins</a> lists the programs that do, and the difference is the point: a SUID <code>find</code>, <code>vim</code> or <code>python</code> is game over, and a SUID <code>passwd</code> is just how Linux works.</p>
+<p>That doesn&#x27;t make them safe, it means they&#x27;re only dangerous if they have bugs. <code>pkexec</code> is the famous example: PwnKit (CVE-2021-4034) was a bug in it that gave root on almost every Linux distro for about 12 years. My polkit is version 128, well after the fix, but it&#x27;s a good reminder that &quot;expected&quot; SUID binaries are exactly where people look for bugs.</p>
+<h2 id="capabilities">Capabilities</h2>
+<pre><code class="language-bash">getcap -r / 2&gt;/dev/null</code></pre>
+<p>Capabilities split root&#x27;s powers into pieces, so a program can get just the one it needs. The ones that matter for escalation are the ones that bypass permission checks or change your user ID.</p>
+<div class="table-wrap"><table><thead><tr><th>File</th><th>Capabilities</th><th>Worth worrying about?</th></tr></thead><tbody><tr><td><code>newuidmap</code>, <code>newgidmap</code></td><td><code>cap_setuid</code>, <code>cap_setgid</code></td><td>expected, used for rootless containers</td></tr><tr><td><code>dumpcap</code></td><td><code>cap_dac_override</code>, <code>cap_net_admin</code>, <code>cap_net_raw</code></td><td>see below</td></tr><tr><td><code>btop</code></td><td><code>cap_dac_read_search</code>, <code>cap_perfmon</code></td><td>see below</td></tr><tr><td><code>rsh</code>, <code>rlogin</code>, <code>rcp</code></td><td><code>cap_net_bind_service</code></td><td>no, but why are these installed?</td></tr><tr><td><code>kwin_wayland</code></td><td><code>cap_sys_nice</code></td><td>no</td></tr><tr><td>a few desktop helpers</td><td><code>cap_perfmon</code>, <code>cap_net_raw</code>, <code>cap_fowner</code></td><td>probably not</td></tr></tbody></table></div>
+<p><code>cap_setuid</code> on <code>newuidmap</code> looks scary but it&#x27;s normal. It&#x27;s how unprivileged users get a range of user IDs for containers, and it only lets you map the IDs listed in <code>/etc/subuid</code>. The same capability on <code>python</code> would be an instant root shell (<code>os.setuid(0)</code>), so it&#x27;s the program that matters, not the capability alone.</p>
+<p><strong><code>dumpcap</code></strong> is Wireshark&#x27;s capture tool. It has <code>cap_dac_override</code>, which means it can ignore file permissions, so in theory it could write a capture file over something it shouldn&#x27;t. Two things limit this: the file is <code>0750 root:wireshark</code>, so only members of the <code>wireshark</code> group can run it, and Wireshark&#x27;s code drops everything except the capture capabilities once it starts. I&#x27;m in the <code>wireshark</code> group, so this one is worth checking properly.</p>
+<p><strong><code>btop</code></strong> is a system monitor. <code>cap_dac_read_search</code> lets it read any file on the system, so it can show details for processes owned by other users. Reading any file is a lot of power for a program that also reads a config file from my home folder and draws a UI.</p>
+<p><strong><code>rsh</code>, <code>rlogin</code>, <code>rcp</code></strong> are the old unencrypted remote shell tools from the 80s. They came in with <code>inetutils</code>, which I installed for something else. They&#x27;re harmless here because I don&#x27;t run the servers, but there&#x27;s no reason to have them.</p>
+<h2 id="groups">Groups</h2>
+<pre><code class="language-bash">id -nG</code></pre>
+<pre><code>wheel wireshark libvirt docker</code></pre>
+<p>This was the bad part.</p>
+<ul><li><strong><code>wheel</code></strong> is expected. It&#x27;s what lets me use <code>sudo</code>, which asks for my password.</li><li><strong><code>wireshark</code></strong> lets me capture packets without root. Fine, but it&#x27;s also what lets me run <code>dumpcap</code> above.</li><li><strong><code>libvirt</code></strong> lets me manage VMs without root. It&#x27;s close to root, because you can create a VM with the host&#x27;s disk attached.</li><li><strong><code>docker</code></strong> is root. Not &quot;close to root&quot;, just root.</li></ul>
+<p>Docker&#x27;s own documentation says the <code>docker</code> group &quot;grants root-level privileges to the user&quot;. Anyone in it can start a container with the host&#x27;s whole filesystem mounted:</p>
+<pre><code class="language-bash">docker run --rm -it -v /:/host alpine chroot /host sh</code></pre>
+<p>That&#x27;s a root shell on the host, with no password and nothing in <code>sudo</code>&#x27;s logs. Being in the <code>docker</code> group means <code>sudo</code> asking for a password is just for show, since anything running as me can skip it.</p>
+<p>I added myself to that group so I didn&#x27;t have to type <code>sudo docker</code> all the time, and I never thought about it again. If someone got code running as my user, through a malicious package or a browser exploit, this is the first thing they&#x27;d check.</p>
+<h2 id="what-im-changing">What I&#x27;m changing</h2>
+<ul><li><strong>Leaving the <code>docker</code> group</strong> and using <a href="https://docs.docker.com/engine/security/rootless/" target="_blank" rel="noopener">rootless Docker</a> or Podman, which run containers without a root daemon.</li><li><strong>Leaving <code>libvirt</code></strong> and using <code>sudo</code> the few times I need to change VMs.</li><li><strong>Checking <code>btop</code> and <code>dumpcap</code></strong> properly, and removing capabilities I don&#x27;t need.</li><li><strong>Removing <code>inetutils</code>.</strong></li></ul>
+<p>The SUID list turned out to be the least interesting part. The real problem was a group I added myself to because typing <code>sudo</code> was annoying.</p>
+        </div>
+        <nav class="pager"><span></span><a class="pager__next" href="/blog/dns-entropy-isnt-enough/"><small>Older →</small>Entropy alone flags a quarter of popular domains</a></nav>
+    </main>
+
+    <footer class="footer">
+        <div class="container footer__inner">
+            <a href="/" class="logo logo--small">kafka</a>
+            <span>© 2026 kafka · <a href="/feed.xml" class="accent">RSS</a></span>
+        </div>
+    </footer>
+</body>
+</html>
