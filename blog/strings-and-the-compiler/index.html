@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="generator" content="metamorphs-build">
+    <title>Turning optimisation off hid more strings than turning it on · kafka</title>
+    <meta name="description" content="I compiled one small C program three ways and ran strings on each. The unoptimised build hid the most, and the optimised one split a registry key into something grep can&#x27;t find.">
+    <link rel="canonical" href="https://metamorphs.dev/blog/strings-and-the-compiler/">
+    <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+    <link rel="icon" href="/assets/favicon-32.png" sizes="32x32" type="image/png">
+    <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+    <link rel="alternate" type="application/rss+xml" title="kafka" href="/feed.xml">
+    <meta name="theme-color" content="#000000">
+    <meta property="og:type" content="article">
+    <meta property="og:url" content="https://metamorphs.dev/blog/strings-and-the-compiler/">
+    <meta property="og:title" content="Turning optimisation off hid more strings than turning it on · kafka">
+    <meta property="og:description" content="I compiled one small C program three ways and ran strings on each. The unoptimised build hid the most, and the optimised one split a registry key into something grep can&#x27;t find.">
+    <meta property="og:image" content="https://metamorphs.dev/assets/og.png">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:image" content="https://metamorphs.dev/assets/og.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+    <header class="nav scrolled">
+        <div class="nav__inner">
+            <a href="/" class="logo">kafka<span class="logo__cursor">_</span></a>
+            <nav class="nav__links nav__links--static">
+                <a href="/blog/">Blog</a>
+                <a href="/#writeups">Writeups</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="article">
+        <a class="article__back" href="/blog/">cd ../blog</a>
+        <h1>Turning optimisation off hid more strings than turning it on</h1>
+        <p class="writeup__meta">15 Nov 2026 · 4 min read</p>
+        <ul class="tags"><li>malware-analysis</li><li>reverse-engineering</li><li>assembly</li><li>static-analyser</li></ul>
+        <div class="article__body">
+<p>Running <code>strings</code> on a binary is usually the first step in static analysis, and my <a href="https://github.com/kafkaesqueismn/static-analyser" target="_blank" rel="noopener">static analyser</a> does the same thing: pull out every run of 4+ printable characters, then look for URLs, paths and registry keys. Malware authors know this, so a common trick is the <strong>stack string</strong>, where text is built in memory at run time instead of being stored in the file.</p>
+<p>I wanted to see how much of that is the author being clever and how much is just the compiler. So I wrote one C file with five strings stored in different ways and compiled it with GCC 16 at <code>-O0</code>, <code>-O2</code> and <code>-Os</code>.</p>
+<h2 id="the-test-program">The test program</h2>
+<pre><code class="language-c">static const char *literal = &quot;http://update.example-c2.net/beacon&quot;;
+
+char stack[32];                     /* one byte at a time */
+stack[0]=&#x27;c&#x27;; stack[1]=&#x27;m&#x27;; stack[2]=&#x27;d&#x27;; stack[3]=&#x27;.&#x27;;
+stack[4]=&#x27;e&#x27;; stack[5]=&#x27;x&#x27;; stack[6]=&#x27;e&#x27;; stack[7]=0;
+
+char init[]   = &quot;powershell -enc&quot;;  /* local array, 16 bytes */
+char longer[] = &quot;Software\\Microsoft\\Windows\\CurrentVersion\\Run&quot;;  /* 46 bytes */
+
+unsigned char x[] = { &#x27;s&#x27;^0x41, &#x27;e&#x27;^0x41, /* ... */ 0 };  /* &quot;secretkey&quot;, XORed */
+for (int i = 0; x[i]; i++) x[i] ^= 0x41;</code></pre>
+<p>All five get printed at the end, so the compiler can&#x27;t throw any of them away. None of them are real indicators; they&#x27;re just strings that look like the sort of thing you&#x27;d want to find.</p>
+<h2 id="what-strings-finds">What strings finds</h2>
+<div class="table-wrap"><table><thead><tr><th>String</th><th><code>-O0</code></th><th><code>-O2</code></th><th><code>-Os</code></th></tr></thead><tbody><tr><td>URL (pointer to a literal)</td><td>found</td><td>found</td><td>found</td></tr><tr><td><code>cmd.exe</code> (byte by byte)</td><td><strong>missing</strong></td><td>found</td><td>found</td></tr><tr><td><code>powershell -enc</code> (16-byte array)</td><td><strong>missing</strong></td><td>found</td><td>found</td></tr><tr><td><code>...\CurrentVersion\Run</code> (46-byte array)</td><td><strong>missing</strong></td><td><strong>missing</strong></td><td>found</td></tr><tr><td><code>secretkey</code> (XORed)</td><td><strong>missing</strong></td><td><strong>missing</strong></td><td><strong>missing</strong></td></tr></tbody></table></div>
+<p>I expected the debug build to be the easy one. It&#x27;s the worst of the three.</p>
+<h2 id="o0-everything-becomes-an-instruction">-O0: everything becomes an instruction</h2>
+<p>Without optimisation, GCC turns local arrays into instructions that write the bytes straight onto the stack. The one-byte-at-a-time version becomes one instruction per character:</p>
+<pre><code>movb   $0x63,-0x60(%rbp)    ; &#x27;c&#x27;
+movb   $0x6d,-0x5f(%rbp)    ; &#x27;m&#x27;
+movb   $0x64,-0x5e(%rbp)    ; &#x27;d&#x27;
+movb   $0x2e,-0x5d(%rbp)    ; &#x27;.&#x27;</code></pre>
+<p>Each character sits between opcode bytes, so there&#x27;s never a run of 4 printable bytes. <code>strings</code> sees nothing.</p>
+<p>The two arrays are built 8 bytes at a time with <code>movabs</code>:</p>
+<pre><code>movabs $0x6568737265776f70,%rax    ; &quot;powershe&quot; (little-endian)
+movabs $0x636e652d206c6c,%rdx      ; &quot;ll -enc\0&quot;</code></pre>
+<p>The 8 characters are contiguous in the file, so <code>strings</code> does find something: <code>powersheH</code> and <code>SoftwareH</code>. The <code>H</code> on the end is <code>0x48</code>, the REX prefix of the next instruction, which happens to be printable. So you get the first 8 characters of each string with junk on the end, and the rest is in separate 8-byte chunks that aren&#x27;t recognisable on their own.</p>
+<p>None of this was me trying to hide anything. I wrote normal C, and the default compiler settings did it.</p>
+<h2 id="o2-back-in-rodata-but-in-pieces">-O2: back in .rodata, but in pieces</h2>
+<p>With optimisation on, GCC goes the other way. <code>cmd.exe</code> is 7 characters plus a null, which fits exactly in one 8-byte <code>movabs</code>, so the whole string ends up in a single immediate and <code>strings</code> finds it. The longer arrays get stored in <code>.rodata</code> and copied onto the stack with 16-byte SSE loads.</p>
+<p>The 46-byte registry key needs three 16-byte copies, which is 48 bytes. Instead of handling the last 14 bytes separately, GCC does the third copy <strong>2 bytes early</strong> so it overlaps the second. That means <code>.rodata</code> holds this:</p>
+<pre><code>Software\Microsoft\Windows\Curre
+                             rentVersion\Run</code></pre>
+<p>which reads as:</p>
+<pre><code>Software\Microsoft\Windows\CurrerentVersion\Run</code></pre>
+<p><code>strings</code> finds it, but <code>grep CurrentVersion</code> doesn&#x27;t, because the file literally says <code>Currerent</code>. My static analyser still tagged it as a registry key, because its pattern matches on the <code>Software\Microsoft\</code> part, but any rule looking for the exact path would miss it.</p>
+<h2 id="os-the-most-readable">-Os: the most readable</h2>
+<p>Optimising for size, GCC skips the SSE tricks and copies from <code>.rodata</code> with a single <code>rep movsb</code>. The strings are stored whole, so everything except the XORed one shows up exactly as written.</p>
+<h2 id="the-xor-one-never-shows-up">The XOR one never shows up</h2>
+<p>The XORed <code>secretkey</code> is missing at every level, which is the point of doing it. GCC didn&#x27;t work out the decoded value at compile time either: even at <code>-O2</code> the encoded bytes are loaded with one <code>movabs</code> and the decode loop is still there. Something like <a href="https://github.com/mandiant/flare-floss" target="_blank" rel="noopener">FLOSS</a> handles this by emulating the code and reading the decoded strings out of memory, which is a different kind of tool from <code>strings</code>.</p>
+<h2 id="what-i-took-from-this">What I took from this</h2>
+<ul><li><strong>Missing strings don&#x27;t mean the author was hiding something.</strong> An ordinary debug build hid four out of five. Seeing <code>powersheH</code> in the output is a sign of stack strings, but it can just be a compiler default.</li><li><strong>Exact matching on strings is fragile.</strong> The same source code gave three different results depending on one compiler flag, and one of them changed the text itself.</li><li><strong><code>strings</code> only finds what&#x27;s stored as data.</strong> For anything built by code, you have to read the disassembly or run it.</li></ul>
+<p>My static analyser currently has the same blind spot as <code>strings</code>, since it&#x27;s built the same way. Spotting runs of <code>movb</code>/<code>movabs</code> with printable immediates and putting them back together would catch the <code>-O0</code> cases, and that&#x27;s the next thing I want to add.</p>
+        </div>
+        <nav class="pager"><span></span><a class="pager__next" href="/blog/privesc-check-on-my-own-laptop/"><small>Older →</small>Running a privilege escalation check on my own laptop</a></nav>
+    </main>
+
+    <footer class="footer">
+        <div class="container footer__inner">
+            <a href="/" class="logo logo--small">kafka</a>
+            <span>© 2026 kafka · <a href="/feed.xml" class="accent">RSS</a></span>
+        </div>
+    </footer>
+</body>
+</html>
