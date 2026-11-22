@@ -132,7 +132,7 @@
         <section id="projects" class="section">
             <div class="container">
                 <h2 class="reveal">Projects</h2>
-                <div class="grid grid--2">
+                <div class="grid grid--2" id="project-grid">
                     <article class="card project project--featured reveal">
                         <div class="project__thumb term"><div class="term__bar"><i></i><i></i><i></i><span>lethe</span></div><pre><span class="t-prompt">$</span> lethe --profile alice --relay 'lethe-relay://…' --name Alice
 lethe ready. /help for commands.
@@ -157,6 +157,19 @@ chatting with [1]
                         <p>A desktop app for encrypting, decrypting, signing and verifying messages and files with OpenPGP. It generates RSA keypairs, keeps a local keyring of contacts, and works alongside GnuPG, Thunderbird and ProtonMail. Built on PGPy with no hand-rolled crypto, and tested on Linux and Windows in CI.</p>
                         <ul class="tags"><li>Python</li><li>OpenPGP</li><li>PySide6</li><li>GitHub Actions</li></ul>
                         <div class="project__links"><a href="https://github.com/kafkaesqueismn/pgp-messenger" target="_blank" rel="noopener">View code ↗</a></div>
+                    </article>
+                    <article class="card project reveal">
+                        <div class="project__thumb term"><div class="term__bar"><i></i><i></i><i></i><span>deobfuscator</span></div><pre><span class="t-prompt">$</span> python3 deobf.py -f samples/chain_b64_xor_b64.txt --chain
+Input: 108 bytes (text), readability score 0.27
+
+Chain results (1 readable, showing top 1):
+
+<span class="t-head">#1  base64 -&gt; xor(key=0x13) -&gt; base64   (score 0.78)</span>
+<span class="t-warn">    powershell -nop -w hidden -c IEX(New-Object Net.WebClient)</span></pre></div>
+                        <h3>Deobfuscator</h3>
+                        <p>A multi-decoder for CTFs and malware triage: detects Base64, Base32, hex, URL encoding, ROT13 and single-byte XOR, and peels layered encodings with a breadth-first search scored by English readability. One file, standard library only.</p>
+                        <ul class="tags"><li>Python</li><li>Malware analysis</li><li>CTFs</li></ul>
+                        <div class="project__links"><a href="https://github.com/kafkaesqueismn/deobfuscator" target="_blank" rel="noopener">View code ↗</a></div>
                     </article>
                     <article class="card project reveal">
                         <div class="project__thumb term"><div class="term__bar"><i></i><i></i><i></i><span>pcap-analyser</span></div><pre><span class="t-prompt">$</span> python -m pcap_analyser samples/sample.pcap
@@ -231,19 +244,6 @@ shift= 9  score=   140.15  Nby mywlyn gyyncha cm un xuqh</pre></div>
                         <div class="project__links"><a href="https://github.com/kafkaesqueismn/cipher-toolkit" target="_blank" rel="noopener">View code ↗</a></div>
                     </article>
                     <article class="card project reveal">
-                        <div class="project__thumb term"><div class="term__bar"><i></i><i></i><i></i><span>deobfuscator</span></div><pre><span class="t-prompt">$</span> python3 deobf.py -f samples/chain_b64_xor_b64.txt --chain
-Input: 108 bytes (text), readability score 0.27
-
-Chain results (1 readable, showing top 1):
-
-<span class="t-head">#1  base64 -&gt; xor(key=0x13) -&gt; base64   (score 0.78)</span>
-<span class="t-warn">    powershell -nop -w hidden -c IEX(New-Object Net.WebClient)</span></pre></div>
-                        <h3>Deobfuscator</h3>
-                        <p>A multi-decoder for CTFs and malware triage: detects Base64, Base32, hex, URL encoding, ROT13 and single-byte XOR, and peels layered encodings with a breadth-first search scored by English readability. One file, standard library only.</p>
-                        <ul class="tags"><li>Python</li><li>Malware analysis</li><li>CTFs</li></ul>
-                        <div class="project__links"><a href="https://github.com/kafkaesqueismn/deobfuscator" target="_blank" rel="noopener">View code ↗</a></div>
-                    </article>
-                    <article class="card project reveal">
                         <div class="project__thumb term"><div class="term__bar"><i></i><i></i><i></i><span>Network_Scan_Detector.ipynb</span></div><pre><span class="t-kw">from</span> sklearn.tree <span class="t-kw">import</span> DecisionTreeClassifier, plot_tree
 
 model = DecisionTreeClassifier(max_depth=4, min_samples_leaf=10, random_state=42)
@@ -256,6 +256,7 @@ model.fit(X_train, y_train)
                         <div class="project__links"><a href="https://github.com/kafkaesqueismn/network-scan-detector" target="_blank" rel="noopener">View code ↗</a></div>
                     </article>
                 </div>
+                <p class="section__more" hidden><button type="button" class="more-toggle" aria-controls="project-grid" aria-expanded="false"></button></p>
             </div>
         </section>
 

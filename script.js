@@ -94,5 +94,31 @@ const reveal = new IntersectionObserver(entries => {
 }, { threshold: 0.12 });
 document.querySelectorAll(".reveal").forEach(el => reveal.observe(el));
 
+// ───── Projects: show the first few, expand the rest on demand ─────
+// Without JS every project stays visible.
+const PROJECTS_SHOWN = 6; // regular cards shown under the featured one
+const projectGrid = document.getElementById("project-grid");
+if (projectGrid) {
+    const extra = [...projectGrid.querySelectorAll(".project:not(.project--featured)")].slice(PROJECTS_SHOWN);
+    const more = projectGrid.nextElementSibling;
+    const btn = more && more.querySelector(".more-toggle");
+    if (extra.length && btn) {
+        const total = projectGrid.querySelectorAll(".project").length;
+        extra.forEach(el => el.classList.add("project--extra"));
+        const set = expanded => {
+            projectGrid.classList.toggle("collapsed", !expanded);
+            btn.setAttribute("aria-expanded", expanded);
+            btn.textContent = expanded ? "Show fewer ↑" : `Show all ${total} projects ↓`;
+        };
+        set(false);
+        more.hidden = false;
+        btn.addEventListener("click", () => {
+            const expanded = btn.getAttribute("aria-expanded") !== "true";
+            set(expanded);
+            if (!expanded) document.getElementById("projects").scrollIntoView({ behavior: "smooth" });
+        });
+    }
+}
+
 // ───── Footer year ─────
 document.getElementById("year").textContent = new Date().getFullYear();
