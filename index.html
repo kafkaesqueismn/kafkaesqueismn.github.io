@@ -115,7 +115,7 @@
                     <article class="card reveal">
                         <h3>Programming</h3>
                         <ul class="tags">
-                            <li>Python</li><li>Scapy</li><li>PySide6</li><li>pytest</li><li>Git &amp; GitHub</li><li>Jupyter</li>
+                            <li>Python</li><li>Rust</li><li>Scapy</li><li>PySide6</li><li>pytest</li><li>Git &amp; GitHub</li><li>Jupyter</li>
                         </ul>
                     </article>
                     <article class="card reveal">
@@ -142,6 +142,21 @@
                             <ul class="tags"><li>Python</li><li>OpenPGP</li><li>PySide6</li><li>GitHub Actions</li></ul>
                             <div class="project__links"><a href="https://github.com/kafkaesqueismn/pgp-messenger" target="_blank" rel="noopener">View code ↗</a></div>
                         </div>
+                    </article>
+                    <article class="card project reveal">
+                        <div class="project__thumb term"><div class="term__bar"><i></i><i></i><i></i><span>lethe</span></div><pre><span class="t-prompt">$</span> lethe --profile alice --relay 'lethe-relay://…' --name Alice
+lethe ready. /help for commands.
+/invite
+invitation for [1] (one-time; share it privately):
+lethe://inv#3q2+7wAAAQ…
+<span class="t-ok">* connected: [1] Bob</span>
+/open 1
+chatting with [1]
+[1] Bob: no accounts, no phone numbers, just queues</pre></div>
+                        <h3>lethe</h3>
+                        <p>A prototype private messenger with no user identifiers at all: no accounts, phone numbers or usernames. Contacts talk over pairwise anonymous queues on relays (SimpleX-style), with end-to-end encryption via an X3DH-style handshake and the Double Ratchet, pinned TLS 1.3, fixed-size frames and optional Tor. Ships as a CLI and a Tauri desktop/mobile app. Work in progress and unaudited.</p>
+                        <ul class="tags"><li>Rust</li><li>Double Ratchet</li><li>Tauri</li><li>Tor</li></ul>
+                        <div class="project__links"><a href="https://github.com/kafkaesqueismn/lethe" target="_blank" rel="noopener">View code ↗</a></div>
                     </article>
                     <article class="card project reveal">
                         <div class="project__thumb term"><div class="term__bar"><i></i><i></i><i></i><span>pcap-analyser</span></div><pre><span class="t-prompt">$</span> python -m pcap_analyser samples/sample.pcap
@@ -214,6 +229,19 @@ shift= 9  score=   140.15  Nby mywlyn gyyncha cm un xuqh</pre></div>
                         <p>Implements classical ciphers (Caesar, Vigenère and XOR) alongside the attacks that break them.</p>
                         <ul class="tags"><li>Python</li><li>Cryptanalysis</li></ul>
                         <div class="project__links"><a href="https://github.com/kafkaesqueismn/cipher-toolkit" target="_blank" rel="noopener">View code ↗</a></div>
+                    </article>
+                    <article class="card project reveal">
+                        <div class="project__thumb term"><div class="term__bar"><i></i><i></i><i></i><span>deobfuscator</span></div><pre><span class="t-prompt">$</span> python3 deobf.py -f samples/chain_b64_xor_b64.txt --chain
+Input: 108 bytes (text), readability score 0.27
+
+Chain results (1 readable, showing top 1):
+
+<span class="t-head">#1  base64 -&gt; xor(key=0x13) -&gt; base64   (score 0.78)</span>
+<span class="t-warn">    powershell -nop -w hidden -c IEX(New-Object Net.WebClient)</span></pre></div>
+                        <h3>Deobfuscator</h3>
+                        <p>A multi-decoder for CTFs and malware triage: detects Base64, Base32, hex, URL encoding, ROT13 and single-byte XOR, and peels layered encodings with a breadth-first search scored by English readability. One file, standard library only.</p>
+                        <ul class="tags"><li>Python</li><li>Malware analysis</li><li>CTFs</li></ul>
+                        <div class="project__links"><a href="https://github.com/kafkaesqueismn/deobfuscator" target="_blank" rel="noopener">View code ↗</a></div>
                     </article>
                     <article class="card project reveal">
                         <div class="project__thumb term"><div class="term__bar"><i></i><i></i><i></i><span>Network_Scan_Detector.ipynb</span></div><pre><span class="t-kw">from</span> sklearn.tree <span class="t-kw">import</span> DecisionTreeClassifier, plot_tree
