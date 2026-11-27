@@ -5,6 +5,14 @@
     <link>https://metamorphs.dev/</link>
     <description>Blog posts and writeups from metamorphs.dev</description>
     <item>
+      <title>The BIOS password I couldn&#x27;t find</title>
+      <link>https://metamorphs.dev/blog/bios-password-i-couldnt-find/</link>
+      <guid>https://metamorphs.dev/blog/bios-password-i-couldnt-find/</guid>
+      <pubDate>Fri, 27 Nov 2026 00:00:00 +0000</pubDate>
+      <category>Blog</category>
+      <description>I dumped the SPI flash on a password-locked Lenovo V110 and went looking for the supervisor password. It wasn&#x27;t where I expected. Here&#x27;s the method, the dead ends, and what I&#x27;d check next.</description>
+    </item>
+    <item>
       <title>Turning optimisation off hid more strings than turning it on</title>
       <link>https://metamorphs.dev/blog/strings-and-the-compiler/</link>
       <guid>https://metamorphs.dev/blog/strings-and-the-compiler/</guid>

@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="generator" content="metamorphs-build">
+    <title>The BIOS password I couldn&#x27;t find · kafka</title>
+    <meta name="description" content="I dumped the SPI flash on a password-locked Lenovo V110 and went looking for the supervisor password. It wasn&#x27;t where I expected. Here&#x27;s the method, the dead ends, and what I&#x27;d check next.">
+    <link rel="canonical" href="https://metamorphs.dev/blog/bios-password-i-couldnt-find/">
+    <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+    <link rel="icon" href="/assets/favicon-32.png" sizes="32x32" type="image/png">
+    <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+    <link rel="alternate" type="application/rss+xml" title="kafka" href="/feed.xml">
+    <meta name="theme-color" content="#000000">
+    <meta property="og:type" content="article">
+    <meta property="og:url" content="https://metamorphs.dev/blog/bios-password-i-couldnt-find/">
+    <meta property="og:title" content="The BIOS password I couldn&#x27;t find · kafka">
+    <meta property="og:description" content="I dumped the SPI flash on a password-locked Lenovo V110 and went looking for the supervisor password. It wasn&#x27;t where I expected. Here&#x27;s the method, the dead ends, and what I&#x27;d check next.">
+    <meta property="og:image" content="https://metamorphs.dev/assets/og.png">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:image" content="https://metamorphs.dev/assets/og.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/style.css?v=b80540557b">
+</head>
+<body>
+    <header class="nav scrolled">
+        <div class="nav__inner">
+            <a href="/" class="logo">kafka<span class="logo__cursor">_</span></a>
+            <nav class="nav__links nav__links--static">
+                <a href="/projects/">Projects</a>
+                <a href="/blog/">Blog</a>
+                <a href="/#writeups">Writeups</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="article">
+        <a class="article__back" href="/blog/">cd ../blog</a>
+        <h1>The BIOS password I couldn&#x27;t find</h1>
+        <p class="writeup__meta">27 Nov 2026 · 5 min read</p>
+        <ul class="tags"><li>hardware</li><li>bios</li><li>reverse-engineering</li><li>firmware</li></ul>
+        <div class="article__body">
+<p>I have a Lenovo V110-15AST (model 80TD, AMD A9, 2018) sitting on my desk that I can&#x27;t get into. It&#x27;s locked behind a BIOS supervisor password I don&#x27;t have: no setup menu, no boot device selection, nothing. This is a write-up of how I went after it, where I got stuck, and what I&#x27;d try next. I haven&#x27;t beaten it yet, so treat this as a lab notebook rather than a victory lap.</p>
+<p>It&#x27;s my own machine, which is the only reason any of this is in scope. &quot;Recover a password I&#x27;m not supposed to have&quot; and &quot;recover a password on hardware I own&quot; are very different sentences, and only one of them belongs on a portfolio.</p>
+<h2 id="the-lock">The lock</h2>
+<p>A supervisor password is the strong one. A power-on password gates boot; a supervisor password gates the firmware configuration itself, and on most machines you can&#x27;t clear it from software or by pulling the CMOS battery, which only resets settings, not the password. So the interesting question isn&#x27;t &quot;how do I click past this,&quot; it&#x27;s &quot;where does this secret physically live, and can I reach it?&quot;</p>
+<p>My working assumption at the start, the obvious one, was that the password, or a hash of it, sits in the main BIOS SPI flash. That assumption is exactly what the rest of this post is about.</p>
+<h2 id="dumping-the-flash-the-part-that-worked">Dumping the flash (the part that worked)</h2>
+<p>The BIOS lives on an SOIC-8 SPI flash chip on the motherboard. To read it I used a CH341A programmer with an SOIC-8 clip, driving it two ways: AsProgrammer as a GUI on Windows, and flashrom as a cross-check. (I installed the CH341 drivers for the programmer to enumerate at all, which on modern Windows is its own small adventure.)</p>
+<p>The read itself was the cleanest part of the whole project. I pulled a full dump of the chip and, this is the step people skip, read it a second time and compared the two images to confirm they were identical, so I knew I had a faithful copy and not a flaky clip contact. At that point I had a byte-for-byte image of the firmware and felt pretty good about it.</p>
+<p>That feeling did not last.</p>
+<h2 id="the-wall">The wall</h2>
+<p>With the dump in hand, I went looking for the password. And I couldn&#x27;t find it.</p>
+<p>I searched the image for anything that looked like a stored credential, read through forum threads and guides for this family of machine, and tried to map the layout of the dump to figure out which region would even hold a password. I came up with nothing I could act on. I had a perfect copy of the firmware and no idea which bytes mattered.</p>
+<p>It&#x27;s worth being precise about what &quot;couldn&#x27;t find it&quot; means, because there are at least two very different explanations and I can&#x27;t yet rule either out:</p>
+<ol><li><strong>It isn&#x27;t in this chip.</strong> The secret may simply not live in the main SPI flash.</li><li><strong>It is in this chip, but not as anything I&#x27;d recognise.</strong> A supervisor password is far more likely to be stored as a hash, or inside a structured NVRAM variable region, than as searchable plaintext. &quot;I grepped the image and found nothing&quot; is weak evidence that something isn&#x27;t there; it&#x27;s strong evidence only that it isn&#x27;t there <em>in the clear</em>.</li></ol>
+<p>I don&#x27;t think I did enough to separate those two cases, and that&#x27;s the honest gap in the work so far.</p>
+<h2 id="the-ebay-detour">The eBay detour</h2>
+<p>While that was stalled, I tried the blunt approach: if the password lives on the board, replace the board. A board swap isn&#x27;t a clever bypass, but it&#x27;s a legitimate one when it&#x27;s your own hardware: you&#x27;re physically removing the component that holds the secret.</p>
+<p>The replacement I bought off eBay turned out to be a different revision of the board for this model, and it didn&#x27;t play nicely with the rest of the machine. Finding the <em>correct</em> revision for this exact laptop proved genuinely hard: this is a budget 2018 machine, and specific-revision spares for it aren&#x27;t exactly a thriving market. That&#x27;s where the project is parked.</p>
+<h2 id="why-i-shelved-it-and-what-id-do-differently">Why I shelved it (and what I&#x27;d do differently)</h2>
+<p>I stopped because I&#x27;d run out of <em>informed</em> moves. I could keep buying boards and hoping, but that&#x27;s spending money to avoid thinking, and I&#x27;d rather come back to it with a hypothesis I can actually test.</p>
+<p>Here&#x27;s what I&#x27;d investigate next, framed as questions rather than answers:</p>
+<ul><li><strong>Is the secret even on the main chip?</strong> On a lot of laptops, security state lives outside the main BIOS flash: in the embedded controller (EC), or in a small dedicated EEPROM. If that&#x27;s the case here, then dumping the BIOS chip and searching it was always going to lead nowhere, and I&#x27;d want to identify the EC and whatever sits near it before touching the SPI flash again. I want to be clear that this is a <em>theory that fits the symptom</em>, not something I&#x27;ve confirmed on this board.</li><li><strong>If it is on the main chip, what form is it in?</strong> Instead of searching for a plaintext string, I&#x27;d try to identify the NVRAM/variable region in the dump and understand its structure, then compare a locked image against a known-unlocked one to see which bytes actually change. A diff is worth a thousand greps.</li><li><strong>Verify before escalating.</strong> Before I buy another board, I&#x27;d confirm which chip holds the password, so I&#x27;m replacing the right thing on purpose rather than by elimination.</li></ul>
+<p>The thing I actually took away from this isn&#x27;t about Lenovo. It&#x27;s that I&#x27;d quietly assumed the answer was in the chip I knew how to read, and then spent my effort there because that&#x27;s where the light was. The hardware skills (clipping onto an SOIC-8, dumping and verifying an image) were the easy, teachable part. The part I got wrong was a reasoning error: I let a convenient assumption stand in for an investigated one. That&#x27;s the bit I want to fix when I pick this back up.</p>
+        </div>
+        <nav class="pager"><span></span><a class="pager__next" href="/blog/strings-and-the-compiler/"><small>Older →</small>Turning optimisation off hid more strings than turning it on</a></nav>
+    </main>
+
+    <footer class="footer">
+        <div class="container footer__inner">
+            <a href="/" class="logo logo--small">kafka</a>
+            <span>© 2026 kafka · <a href="/feed.xml" class="accent">RSS</a></span>
+        </div>
+    </footer>
+</body>
+</html>

@@ -88,7 +88,7 @@ movabs $0x636e652d206c6c,%rdx      ; &quot;ll -enc\0&quot;</code></pre>
 <ul><li><strong>Missing strings don&#x27;t mean the author was hiding something.</strong> An ordinary debug build hid four out of five. Seeing <code>powersheH</code> in the output is a sign of stack strings, but it can just be a compiler default.</li><li><strong>Exact matching on strings is fragile.</strong> The same source code gave three different results depending on one compiler flag, and one of them changed the text itself.</li><li><strong><code>strings</code> only finds what&#x27;s stored as data.</strong> For anything built by code, you have to read the disassembly or run it.</li></ul>
 <p>My static analyser currently has the same blind spot as <code>strings</code>, since it&#x27;s built the same way. Spotting runs of <code>movb</code>/<code>movabs</code> with printable immediates and putting them back together would catch the <code>-O0</code> cases, and that&#x27;s the next thing I want to add.</p>
         </div>
-        <nav class="pager"><span></span><a class="pager__next" href="/blog/privesc-check-on-my-own-laptop/"><small>Older →</small>Running a privilege escalation check on my own laptop</a></nav>
+        <nav class="pager"><a class="pager__prev" href="/blog/bios-password-i-couldnt-find/"><small>← Newer</small>The BIOS password I couldn&#x27;t find</a><a class="pager__next" href="/blog/privesc-check-on-my-own-laptop/"><small>Older →</small>Running a privilege escalation check on my own laptop</a></nav>
     </main>
 
     <footer class="footer">
